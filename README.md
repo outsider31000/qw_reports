@@ -1,14 +1,7 @@
 # qw_reports
 
-Standalone FiveM reporting system that works with ace permissions
+# for VORP ONLY
 
-## [INSTALL FROM THE LATEST RELEASE PLEASE](https://github.com/qw-scripts/qw_reports/releases/latest)
-
-## [INSTALL FROM THE LATEST RELEASE PLEASE](https://github.com/qw-scripts/qw_reports/releases/latest)
-
-## [INSTALL FROM THE LATEST RELEASE PLEASE](https://github.com/qw-scripts/qw_reports/releases/latest)
-
-## [INSTALL FROM THE LATEST RELEASE PLEASE](https://github.com/qw-scripts/qw_reports/releases/latest)
 
 make sure to configure your ace permssion name in the config file that you use for admins / who ever is going to have access to all of the reports
 
