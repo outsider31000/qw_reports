@@ -1,12 +1,16 @@
 -- COMMANDS --
+VORP = {}
+TriggerEvent("getCore", function(core)
+    VORP = core
+end)
 
-RegisterCommand(Config.CreateReportCommand, function()
+RegisterCommand("createreport", function()
     SendNUIMessage({ action = 'setVisible', data = { show = true, type = 'user' } })
     SetNuiFocus(true, true)
 end, false)
 
-RegisterCommand(Config.ViewReportsMenu, function()
-    lib.callback('qw_reports:server:checkPerms', false, function(allowed)
+RegisterCommand("viewreports", function()
+    VORP.RpcCall('qw_reports:server:checkPerms', function(allowed)
         if allowed then
             SendNUIMessage({ action = 'setVisible', data = { show = true, type = 'admin' } })
             SetNuiFocus(true, true)
@@ -14,31 +18,34 @@ RegisterCommand(Config.ViewReportsMenu, function()
     end)
 end, false)
 
+AddEventHandler("vorp_admin:CreateReport", function()
+    SendNUIMessage({ action = 'setVisible', data = { show = true, type = 'user' } })
+    SetNuiFocus(true, true)
+end)
+
+AddEventHandler("vorp_admin:viewreports", function()
+    SendNUIMessage({ action = 'setVisible', data = { show = true, type = 'admin' } })
+    SetNuiFocus(true, true)
+end)
+
 -- REPORTING CALLBACKS AND EVENTS --
 
 RegisterNetEvent('qw_reports:client:sendNotification', function()
-    lib.notify({
-        title = 'Reports',
-        description = 'new report has been submitted...',
-        type = 'info',
-        icon = 'flag'
-    })
+    VORP.NotifyRightTip("Report success", 8000)
 end)
 
 RegisterNUICallback('reports/CreateReport', function(data, cb)
     TriggerServerEvent('qw_reports:server:createReport', data)
-
     cb("ok")
 end)
 
 RegisterNUICallback('reports/DeleteReport', function(data, cb)
     TriggerServerEvent('qw_reports:server:deleteReport', data)
-
     cb("ok")
 end)
 
 RegisterNUICallback('reports/GetReports', function(_, cb)
-    lib.callback('qw_reports:server:getCurrentReports', false, function(reports)
+    VORP.RpcCall('qw_reports:server:getCurrentReports', function(reports)
         cb(reports)
     end)
 end)

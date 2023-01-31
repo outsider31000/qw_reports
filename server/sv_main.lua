@@ -1,5 +1,10 @@
 local reports = {}
 
+VORP = {}
+TriggerEvent("getCore", function(core)
+    VORP = core
+end)
+
 -- yoinked from here: https://gist.github.com/jrus/3197011
 local function uuid()
     local template = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'
@@ -11,7 +16,7 @@ end
 
 local function sendNotificationToStaff()
     for _, playerId in ipairs(GetPlayers()) do
-        if IsPlayerAceAllowed(playerId, Config.AcePermName) then
+        if IsPlayerAceAllowed(playerId, "vorp.staff.ViewReports") then
             TriggerClientEvent('qw_reports:client:sendNotification', playerId)
         end
     end
@@ -99,7 +104,9 @@ RegisterNetEvent('qw_reports:server:deleteReport', function(data)
     local tempTable = {}
 
     for _, v in ipairs(reports) do
-        if v.report_id == data.report_id then goto continue end
+        if v.report_id == data.report_id then
+            goto continue
+        end
 
         tempTable[#tempTable + 1] = v
 
@@ -119,30 +126,27 @@ RegisterNetEvent('qw_reports:server:actionHandler', function(reportingPlayerId, 
         local staffMember = GetPlayerPed(src)
         local reportingPlayer = GetPlayerPed(reportingPlayerId)
         local staffCoords = GetEntityCoords(staffMember)
-
         SetEntityCoords(reportingPlayer, staffCoords.x, staffCoords.y, staffCoords.z, false, false, false, false)
     else
         local staffMember = GetPlayerPed(src)
         local reportingPlayer = GetPlayerPed(reportingPlayerId)
-
         local reportingPlayerCoords = GetEntityCoords(reportingPlayer)
-
         SetEntityCoords(staffMember, reportingPlayerCoords.x, reportingPlayerCoords.y, reportingPlayerCoords.z, false,
             false, false, false)
     end
 
 end)
 
-lib.callback.register('qw_reports:server:getCurrentReports', function()
-    return reports
+VORP.addRpcCallback('qw_reports:server:getCurrentReports', function(source, cb)
+    cb(reports)
 end)
 
-lib.callback.register('qw_reports:server:checkPerms', function(source)
+VORP.addRpcCallback('qw_reports:server:checkPerms', function(source, cb)
     local src = source
 
-    if IsPlayerAceAllowed(src, Config.AcePermName) then
-        return true
+    if IsPlayerAceAllowed(src, "vorp.staff.ViewReports") then -- make sure you have this in vorp_perms.cfg
+        cb(true)
     else
-        return false
+        cb(false)
     end
 end)
